@@ -1,8 +1,8 @@
-"""Adding update user mode
+"""Updating my database
 
-Revision ID: 4501f293ffb9
+Revision ID: bb50107450f1
 Revises: 
-Create Date: 2024-09-04 17:10:51.730961
+Create Date: 2024-09-06 08:40:53.940423
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '4501f293ffb9'
+revision: str = 'bb50107450f1'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
