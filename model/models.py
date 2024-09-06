@@ -1,6 +1,9 @@
 from sqlalchemy import TIMESTAMP, Column, Integer, String, text
-
 from database import Base
+
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class Movie(Base):
     __tablename__ = "movies"
