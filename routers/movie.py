@@ -17,9 +17,17 @@ movieRouter = APIRouter(
 @movieRouter.get("/")
 def get_movie(db: Session = Depends(get_db), 
             current_user: int = Depends(oauth2.get_current_user)):
-    all_movies = db.query(models.Movie).all()
-    return {"message":"Movies retrieved", "data":all_movies}
+    
 
+   
+    # this will fetch all the movies that belongs to that logged in user
+    all_movies = db.query(models.Movie).filter(models.Movie.owner_id == current_user.id).all()
+
+    # return {"message":"Movies retrieved", "data":all_movies}
+   
+    # print(all_movies)
+    return all_movies
+# start from 138
 
 # create a new movie
 @movieRouter.post("/", status_code=status.HTTP_201_CREATED)
@@ -27,12 +35,19 @@ def create_movie(new_movie: CreateMovie, db: Session = Depends(get_db),
                  current_user: int = Depends(oauth2.get_current_user)):
     
     theNewMovie = models.Movie(
+        owner_id=current_user.id,
         name=new_movie.name, 
         year=new_movie.year,
         description=new_movie.description
         # **new_movie.model_dump()
     )
+    # print(current_user.email)
+    # print(current_user.id)
+    # theNewMovie = models.Movie(
+    #     owner_id=current_user.id , **new_movie.model_dump())
 
+    # start from 133
+    
     db.add(theNewMovie)
     db.commit()
     db.refresh(theNewMovie)
@@ -40,14 +55,13 @@ def create_movie(new_movie: CreateMovie, db: Session = Depends(get_db),
     return{"data":theNewMovie}
 
 
-    # start from page 69
 
 # fetch single movie
 @movieRouter.get("/{id}")
 def get_single_movie(id: int, db: Session = Depends(get_db),
                      current_user: int = Depends(oauth2.get_current_user)):
 
-    movie = db.query(models.Movie).filter(models.Movie.id == id).first()
+    movie = db.query(models.Movie).filter(models.Movie.id == current_user.id).first()
     
     # check if the movie is not available return exception message
     if not movie:
@@ -68,9 +82,15 @@ def delete_movie(id: int, db: Session = Depends(get_db),
     themovie = db.query(models.Movie).filter(models.Movie.id == id)
 
     # check if the one fetched is not available, return error message
-    if not themovie.first():
+    movie = themovie.first()
+
+    if movie == None:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                              details=f"Movie with id: {id} not found")
+    
+    # we need to check if the post is for the current user that wants to delete it
+    if movie.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform this action")
     
     # if found then delete what we fetched
 
@@ -92,6 +112,10 @@ def update_movie(id: int, movie_update: UpdateMovie, db: Session = Depends(get_d
     if not movie:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                              details=f"movie with id: {id} not found")
+    
+    # we need to check if the post is for the current user that wants to delete it
+    if movie.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform this action")
     
     movie_query.update(movie_update.model_dump(), synchronize_session=False)
 

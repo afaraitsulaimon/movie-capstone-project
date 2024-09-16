@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Column, Integer, String, text
+from sqlalchemy import TIMESTAMP, Column, Integer, String, text, ForeignKey
 from database import Base
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -14,6 +14,8 @@ class Movie(Base):
     description = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, 
                         server_default=text('now()'))
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE")
+                      ,nullable=False)
     
 
 class User(Base):

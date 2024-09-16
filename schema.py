@@ -53,7 +53,9 @@ class TokenData(BaseModel):
 # class MovieView(BaseModel):
 #     name: str
 #     year: int
-#     # description: str
+#     description: str
+#     created_at: datetime
+#     owner_id: int
 
 #     class Config:
 #         orm_mode = True
