@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-
+from pydantic.types import conint
 
 class MovieBase(BaseModel):
     name: str
@@ -59,3 +59,7 @@ class TokenData(BaseModel):
 
 #     class Config:
 #         orm_mode = True
+
+class Rate(BaseModel):
+    movie_id: int
+    dir: conint(le=1) # type: ignore

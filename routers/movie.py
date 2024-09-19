@@ -16,18 +16,17 @@ movieRouter = APIRouter(
 
 @movieRouter.get("/")
 def get_movie(db: Session = Depends(get_db), 
-            current_user: int = Depends(oauth2.get_current_user)):
+            current_user: int = Depends(oauth2.get_current_user), limit: int = 10, skip: int = 0):
     
 
    
     # this will fetch all the movies that belongs to that logged in user
-    all_movies = db.query(models.Movie).filter(models.Movie.owner_id == current_user.id).all()
+    all_movies = db.query(models.Movie).filter(models.Movie.owner_id == current_user.id).limit(limit).offset(skip).all()
 
     # return {"message":"Movies retrieved", "data":all_movies}
    
     # print(all_movies)
     return all_movies
-# start from 138
 
 # create a new movie
 @movieRouter.post("/", status_code=status.HTTP_201_CREATED)
@@ -124,3 +123,4 @@ def update_movie(id: int, movie_update: UpdateMovie, db: Session = Depends(get_d
     return{"message":"Movie successfully Updated", "data": movie_query.first()}
     
 
+# start from 150 , which is vote on the note, but for like
